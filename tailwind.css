@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+
+@layer base {
+  h1 {
+    @apply text-3xl font-bold pt-8;
+  }
+  h2 {
+    @apply text-2xl font-semibold pt-8;
+  }
+  h3 {
+    @apply text-xl font-semibold pt-4;
+  }
+
+  h4 {
+    @apply text-xl italic pt-4;
+  }
+
+  h5 {
+    @apply text-lg pt-4;
+  }
+
+  /* a {
+    @apply text-blue;
+  } */
+
+  p {
+    @apply p-1;
+  }
+
+  html,
+  body {
+    @apply tracking-wide leading-loose break-words;
+  }
+
+  input,
+  textarea,
+  /* select {
+    @apply text-black;
+  } */
+
+  blockquote {
+    @apply italic md:p-10 p-3;
+  }
+}
+
+@tailwind components;
+@tailwind utilities;
