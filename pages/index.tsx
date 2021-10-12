@@ -1,5 +1,4 @@
 import CustomList, { ListItem, ListProps } from '@components/CustomList'
-import TestWen from '@components/Home/TestWen'
 
 const drinks: ListItem[] = [
   { name: 'jaa', title: 'adad', calories: 10 },
