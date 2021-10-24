@@ -51,7 +51,9 @@ const DrawChart = ({ data }: Props) => {
 
       svg.attr('width', width).attr('height', height)
 
+      // @ts-expect-error
       const yScale = d3.scaleLinear().domain(d3.extent(data, yAccessor)).range([boundedHeight, 0]).nice()
+      // @ts-expect-error
       const xScale = d3.scaleLinear().domain(d3.extent(data, xAccessor)).range([0, boundedWidth]).nice()
 
       const lineGenerator = d3
@@ -62,6 +64,7 @@ const DrawChart = ({ data }: Props) => {
       const line = svg
         .select('.bounds')
         .append('path')
+        // @ts-expect-error
         .attr('d', lineGenerator(data))
         .attr('fill', 'none')
         .attr('stroke', '#af9358')
