@@ -118,6 +118,15 @@ const ListItem = ({
             <span className='flex-shrink-0 inline-block px-2 py-0.5 text-green-800 text-xs font-medium bg-green-100 rounded-full'>
               {selectedDrinks.selectedDrinks[drink.name] || '0'}
             </span>
+
+            <span className='flex-shrink-0 inline-block px-2 py-0.5 text-white-800 text-xs font-medium bg-red-100 rounded-full'>
+              {/* calculate drank drinks */}
+              {
+                drankDrinksState.drankDrinks.filter(x => {
+                  return x.name === drink.name
+                }).length
+              }
+            </span>
           </div>
         </div>
       </div>
@@ -178,10 +187,14 @@ export type TGraphData = IPoint[]
 
 type genderCoeff = 0.55 | 0.68
 //! Temporary
+
+export interface PersonPhysicalProperties {
+  coeff: genderCoeff
+  weight: number
+}
 const CalculateBAC = (
   drankDrinksState: IDrankDrinks,
-  coeff: genderCoeff,
-  weight: number
+  properties: PersonPhysicalProperties
 ): { BAC: number; BACData: TGraphData } => {
   const decayRate = 0.015
   const drankDrinks = drankDrinksState.drankDrinks
@@ -202,7 +215,7 @@ const CalculateBAC = (
     const std = getSTDDrink(drankDrinks[i].name)
 
     if (i === 0) {
-      BAC += std / (weight * coeff)
+      BAC += std / (properties.weight * properties.coeff)
       data.push({ x: 0, y: 0 })
       data.push({ x: 0, y: BAC })
     } else {
@@ -219,7 +232,7 @@ const CalculateBAC = (
       console.log(`${BAC} dada1`)
       console.log(`${decayedBAC} dada2`)
 
-      const addSTD = std / (weight * coeff)
+      const addSTD = std / (properties.weight * properties.coeff)
 
       BAC = decayedBAC < 0 ? addSTD : decayedBAC + addSTD
 
@@ -283,7 +296,12 @@ export default function CustomGridList(props: CustomGridListProps) {
     setDrankDrinks(iiii)
   }, [])
 
-  const reeee = drankDrinks.drankDrinks.length === 0 ? null : CalculateBAC(drankDrinks, 0.55, 80)
+  const personProps: PersonPhysicalProperties = {
+    coeff: 0.55,
+    weight: 80
+  }
+
+  const BACRetData = drankDrinks.drankDrinks.length === 0 ? null : CalculateBAC(drankDrinks, personProps)
 
   return (
     <>
@@ -299,7 +317,7 @@ export default function CustomGridList(props: CustomGridListProps) {
         open={openDrankModal}
         setOpen={setOpenDrankModal}
         drankDrinks={drankDrinks}
-        BACData={reeee}
+        BACData={BACRetData}
         setDrankDrinks={setDrankDrinks}
       />
 
