@@ -5,6 +5,7 @@ import { Drink } from 'interfaces/drinks'
 import Image from 'next/image'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import Modal from '../Modal'
+import DrankModal from './DrankModal'
 import LineChart from './LineChart'
 import ListHeader from './ListHeader'
 import SelectedModal from './SelectedModal'
@@ -173,7 +174,7 @@ export interface IPoint {
   x: number
   y: number
 }
-type TData = IPoint[]
+export type TGraphData = IPoint[]
 
 type genderCoeff = 0.55 | 0.68
 //! Temporary
@@ -181,13 +182,13 @@ const CalculateBAC = (
   drankDrinksState: IDrankDrinks,
   coeff: genderCoeff,
   weight: number
-): { BAC: number; BACData: TData } => {
+): { BAC: number; BACData: TGraphData } => {
   const decayRate = 0.015
   const drankDrinks = drankDrinksState.drankDrinks
 
   let BAC = 0.0
 
-  const data: TData = []
+  const data: TGraphData = []
 
   const preFirstDrink: Date = drankDrinks[0].time
   const firstDrink: Date = typeof preFirstDrink === 'string' ? new Date(preFirstDrink) : preFirstDrink
@@ -270,6 +271,7 @@ export default function CustomGridList(props: CustomGridListProps) {
   const [drankDrinks, setDrankDrinks] = useState<IDrankDrinks>(initDrankDrinksState)
 
   const [openSelectedModal, setOpenSelectedModal] = useState(false)
+  const [openDrankModal, setOpenDrankModal] = useState(false)
 
   useEffect(function () {
     const ddd = localStorage.getItem('drankDrinks')
@@ -286,8 +288,22 @@ export default function CustomGridList(props: CustomGridListProps) {
   return (
     <>
       <Modal drink={drinkSelected} setOpen={setOpen} />
-      <SelectedModal open={openSelectedModal} setOpen={setOpenSelectedModal} selectedDrink={selectedDrinks} />
-      <ListHeader setOpen={setOpenSelectedModal} />
+
+      <SelectedModal
+        open={openSelectedModal}
+        setOpen={setOpenSelectedModal}
+        selectedDrinks={selectedDrinks}
+        setSelectedDrink={setSelectedDrinks}
+      />
+      <DrankModal
+        open={openDrankModal}
+        setOpen={setOpenDrankModal}
+        drankDrinks={drankDrinks}
+        BACData={reeee}
+        setDrankDrinks={setDrankDrinks}
+      />
+
+      <ListHeader setSelectedOpen={setOpenSelectedModal} setDrankOpen={setOpenDrankModal} />
 
       <div role='list' className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3'>
         {props.drinks.map((drink, i) => (
@@ -301,15 +317,6 @@ export default function CustomGridList(props: CustomGridListProps) {
           />
         ))}
       </div>
-
-      {JSON.stringify(drankDrinks)}
-
-      {reeee && (
-        <>
-          <div>{reeee.BAC}</div>
-          <LineChart data={reeee.BACData} />
-        </>
-      )}
     </>
   )
 }

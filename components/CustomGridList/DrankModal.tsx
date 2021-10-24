@@ -2,13 +2,19 @@
 import { Dispatch, Fragment, SetStateAction, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { CheckIcon } from '@heroicons/react/outline'
-import { ISelectDrinks } from '.'
+import { IDrankDrinks, ISelectDrinks, TGraphData } from '.'
+import LineChart from './LineChart'
 
-export default function SelectedModal(p: {
+export default function DrankModal(p: {
   open: boolean
   setOpen: Dispatch<SetStateAction<boolean>>
-  selectedDrinks: ISelectDrinks
-  setSelectedDrink: Dispatch<SetStateAction<ISelectDrinks>>
+  drankDrinks: IDrankDrinks
+  setDrankDrinks: Dispatch<SetStateAction<IDrankDrinks>>
+
+  BACData: {
+    BAC: number
+    BACData: TGraphData
+  } | null
 }) {
   return (
     <Transition.Root show={p.open} as={Fragment}>
@@ -41,37 +47,45 @@ export default function SelectedModal(p: {
           >
             <div className='inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6'>
               <div>
-                <div className='mt-3 text-center sm:mt-5'>
-                  {/* {p.selectedDrink.selectedDrinks} */}
-                  {Object.keys(p.selectedDrinks.selectedDrinks).map(nn => {
-                    return p.selectedDrinks.selectedDrinks[nn] > 0 ? (
-                      <Dialog.Title as='h3' className='text-lg leading-6 font-medium text-gray-900'>
-                        {nn} : {p.selectedDrinks.selectedDrinks[nn]}{' '}
-                      </Dialog.Title>
-                    ) : (
-                      <></>
+                <div>
+                  {p.drankDrinks.drankDrinks.map((nn, ii) => {
+                    return (
+                      <div className='grid grid-cols-2 shadow-md p-2' key={`${ii} dada`}>
+                        <span className='p-2'> {nn.name} </span>
+                        <span className='p-2'>
+                          {typeof nn.time === 'object' ? nn.time.toDateString() : new Date(nn.time).toDateString()}{' '}
+                        </span>
+                        <span className='grid justify-items-center'>
+                          <span>
+                            <button
+                              type='button'
+                              className='bg-blue-200 text-white p-2'
+                              onClick={() => {
+                                // remove the item
+                                p.drankDrinks.drankDrinks.splice(ii, 1)
+                                localStorage.setItem('drankDrinks', JSON.stringify(p.drankDrinks.drankDrinks))
+
+                                p.setDrankDrinks({
+                                  drankDrinks: p.drankDrinks.drankDrinks,
+                                  update: (p.drankDrinks.update + 1) % 2
+                                })
+                              }}
+                            >
+                              x
+                            </button>
+                          </span>
+                        </span>
+                      </div>
                     )
                   })}
                 </div>
+                {p.BACData && (
+                  <>
+                    <div>BAC: {p.BACData.BAC}</div>
+                    <LineChart data={p.BACData.BACData} />
+                  </>
+                )}
               </div>
-
-              <div className='mt-5 sm:mt-6'>
-                <button
-                  type='button'
-                  className='inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm'
-                  onClick={() => {
-                    // Remove Everything with button
-
-                    p.setSelectedDrink({
-                      selectedDrinks: {},
-                      update: (p.selectedDrinks.update + 1) % 2
-                    })
-                  }}
-                >
-                  Clear Selection
-                </button>
-              </div>
-
               <div className='mt-5 sm:mt-6'>
                 <button
                   type='button'
